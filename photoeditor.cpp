@@ -51,8 +51,8 @@ void PhotoEditor::brightness()
     int size = image.height() * image.width();
     QRgb* data = new QRgb[size];
     memmove(data, image.bits(), image.height() * image.width() * sizeof(QRgb));
-    QRgb* ptr = data;
-    QRgb* end = ptr + image.width() * image.height();
+    unsigned int* ptr = data;
+    unsigned int* end = ptr + image.width() * image.height();
     for (; ptr < end; ++ptr)
         *ptr = qRgb((qRed(*ptr) + 20)>255?255:(qRed(*ptr) + 20), (qGreen(*ptr) + 20)>255?255:(qGreen(*ptr) + 20), (qBlue(*ptr) + 20)>255?255:(qBlue(*ptr) + 20));
     memmove(image.bits(), data, image.height() * image.width() * sizeof(QRgb));
@@ -69,7 +69,7 @@ void PhotoEditor::gamma()
     QRgb* ptr = data;
     QRgb* end = ptr + image.width() * image.height();
     for (; ptr < end; ++ptr)
-        *ptr = qRgb(255 - qRed(*ptr), 255 - qRed(*ptr), 255 - qRed(*ptr));
+        *ptr = qRgb((qRed(*ptr)/255)*(qRed(*ptr)/255)*255, (qGreen(*ptr)/255)*(qGreen(*ptr)/255)*255, (qBlue(*ptr)/255)*(qBlue(*ptr)/255)*255);
     memmove(image.bits(), data, image.height() * image.width() * sizeof(QRgb));
     current = QPixmap::fromImage(image);
     ui->label->setPixmap(current.scaled(ui->label_2->width(), ui->label_2->height(), Qt::KeepAspectRatio));
