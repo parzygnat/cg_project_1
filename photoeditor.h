@@ -17,6 +17,12 @@ public:
     ~PhotoEditor();
 private slots:
     void open();
+    void box_blur();
+    void gaussian_blur();
+    void emboss();
+    void edge_detection();
+    void sharpen();
+    void save();
     void inverse();
     void brightness();
     void gamma();

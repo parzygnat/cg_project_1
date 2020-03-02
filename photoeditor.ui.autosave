@@ -193,25 +193,40 @@
    <property name="text">
     <string>Box Blur</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+5</string>
+   </property>
   </action>
   <action name="actionGaussian_Blur">
    <property name="text">
     <string>Gaussian Blur</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+6</string>
    </property>
   </action>
   <action name="actionSharpen">
    <property name="text">
     <string>Sharpen</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+7</string>
+   </property>
   </action>
   <action name="actionEdge_Detection">
    <property name="text">
     <string>Edge Detection</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+8</string>
+   </property>
   </action>
   <action name="actionEmboss">
    <property name="text">
     <string>Emboss</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+9</string>
    </property>
   </action>
  </widget>
