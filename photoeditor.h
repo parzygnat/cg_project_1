@@ -27,7 +27,7 @@ private slots:
     void brightness();
     void gamma();
     void contrast();
-
+    void convolution(int sizeX, int sizeY, double* values, int anchor);
 private:
     Ui::PhotoEditor *ui;
     QString currentFile;
