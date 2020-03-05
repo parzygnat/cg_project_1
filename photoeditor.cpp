@@ -11,7 +11,9 @@ PhotoEditor::PhotoEditor(QWidget *parent)
     , ui(new Ui::PhotoEditor)
 {
     ui->setupUi(this);
+
     myFilter = new CustomFilter;
+
     this->setCentralWidget(ui->horizontalFrame);
     connect(ui->actionLoad_Image, &QAction::triggered, this, &PhotoEditor::open);
     connect(ui->actionInversion, &QAction::triggered, this, &PhotoEditor::inverse);
