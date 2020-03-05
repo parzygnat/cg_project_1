@@ -2,6 +2,7 @@
 #define PHOTOEDITOR_H
 
 #include <QMainWindow>
+#include "customfilter.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class PhotoEditor; }
@@ -27,11 +28,16 @@ private slots:
     void brightness();
     void gamma();
     void contrast();
-    void convolution(int sizeX, int sizeY, double* values, int anchor);
+    void convolution(int sizeX, int sizeY, double* values, int anchorX, int anchorY);
+    void on_actionReset_triggered();
+
+    void on_actionCustom_Filter_triggered();
+
 private:
     Ui::PhotoEditor *ui;
     QString currentFile;
     QPixmap initial;
     QPixmap current;
+    CustomFilter *myFilter;
 };
 #endif // PHOTOEDITOR_H

@@ -11,6 +11,7 @@ PhotoEditor::PhotoEditor(QWidget *parent)
     , ui(new Ui::PhotoEditor)
 {
     ui->setupUi(this);
+    myFilter = new CustomFilter;
     this->setCentralWidget(ui->horizontalFrame);
     connect(ui->actionLoad_Image, &QAction::triggered, this, &PhotoEditor::open);
     connect(ui->actionInversion, &QAction::triggered, this, &PhotoEditor::inverse);
@@ -36,10 +37,12 @@ void PhotoEditor::open()
     QFile file(fileName);
     currentFile = fileName;
     setWindowTitle(fileName);
-    QImage image(fileName);
-    current = initial = QPixmap::fromImage(image);
-    ui->label->setPixmap(initial.scaled(ui->label->width(), ui->label->height(), Qt::KeepAspectRatio));
-    ui->label_2->setPixmap(initial.scaled(ui->label_2->width(), ui->label_2->height(), Qt::KeepAspectRatio));
+    if(!fileName.isEmpty()) {
+        QImage image(fileName);
+        current = initial = QPixmap::fromImage(image);
+        ui->label->setPixmap(initial.scaled(ui->label->width(), ui->label->height(), Qt::KeepAspectRatio));
+        ui->label_2->setPixmap(initial.scaled(ui->label_2->width(), ui->label_2->height(), Qt::KeepAspectRatio));
+    }
 }
 
 void PhotoEditor::save() {
@@ -108,13 +111,7 @@ void PhotoEditor::contrast()
     ui->label->setPixmap(current.scaled(ui->label_2->width(), ui->label_2->height(), Qt::KeepAspectRatio));
 }
 
-void PhotoEditor::box_blur()
-{
-    double vals[9] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
-    PhotoEditor::convolution(3, 3, vals, 4);
-}
-
-void PhotoEditor::convolution(int sizeX, int sizeY, double* values, int anchor) {
+void PhotoEditor::convolution(int sizeX, int sizeY, double* values, int anchorX, int anchorY) {
     QImage image = current.toImage().convertToFormat(QImage::Format_RGB888);
     QImage image2 = current.toImage().convertToFormat(QImage::Format_RGB888);
     uchar* ptr = image.bits();
@@ -125,17 +122,23 @@ void PhotoEditor::convolution(int sizeX, int sizeY, double* values, int anchor) 
     int y = 1;
     double sum = 0;
     double sum_of_coeffs = 0;
-    for (; ptr < end; ptr++){
+    for(; ptr < end; ptr++){
         for(int j = 0; j < sizeX*sizeY; ++j) {
-            sum += values[j] * ptr2[idx - ((anchor/sizeX) - j/sizeX)*image.width()*3 - ((anchor%sizeX) - j%sizeX)*3];
+            int n_ind = idx - (anchorY - j/sizeX)*image.width()*3 - (anchorX - j%sizeX)*3;
+            if(n_ind < 0 || n_ind > image.width()*image.height()*3)
+                continue;
+            sum += values[j] * ptr2[n_ind];
             sum_of_coeffs += values[j];
         }
-        *ptr = sum/sum_of_coeffs;
-        ++x;
-        if(x >= image.width()){
-            x = 0;
+        if(sum_of_coeffs == 0) sum_of_coeffs = 1;
+        *ptr = qBound(0.0, sum/sum_of_coeffs, 255.0);
+
+        if(x == image.width()){
+            x = 1;
             ++y;
         }
+        else
+            ++x;
         ++idx;
         sum = 0;
         sum_of_coeffs = 0;
@@ -146,50 +149,32 @@ void PhotoEditor::convolution(int sizeX, int sizeY, double* values, int anchor) 
 
 void PhotoEditor::edge_detection()
 {
-    QImage image = current.toImage().convertToFormat(QImage::Format_RGB888);
-    uchar* ptr = image.bits();
-    uchar* end = ptr + 3 * image.width() * image.height();
-    for (; ptr < end; ptr++){
-        *ptr = 255 - *ptr;
-    }
-    current = QPixmap::fromImage(image);
-    ui->label->setPixmap(current.scaled(ui->label_2->width(), ui->label_2->height(), Qt::KeepAspectRatio));
+    double vals[9] = {-1, -1, -1, -1, 8, -1, -1, -1, -1};
+    PhotoEditor::convolution(3, 3, vals, 1, 1);
 }
 
 void PhotoEditor::emboss()
 {
-    QImage image = current.toImage().convertToFormat(QImage::Format_RGB888);
-    uchar* ptr = image.bits();
-    uchar* end = ptr + 3 * image.width() * image.height();
-    for (; ptr < end; ptr++){
-        *ptr = 255 - *ptr;
-    }
-    current = QPixmap::fromImage(image);
-    ui->label->setPixmap(current.scaled(ui->label_2->width(), ui->label_2->height(), Qt::KeepAspectRatio));
+    double vals[9] = {-1, -1, 0, -1, 1, 1, 0, 1, 1};
+    PhotoEditor::convolution(3, 3, vals, 1, 1);
+}
+
+void PhotoEditor::box_blur()
+{
+    double vals[9] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
+    PhotoEditor::convolution(3, 3, vals, 1, 1);
 }
 
 void PhotoEditor::sharpen()
 {
-    QImage image = current.toImage().convertToFormat(QImage::Format_RGB888);
-    uchar* ptr = image.bits();
-    uchar* end = ptr + 3 * image.width() * image.height();
-    for (; ptr < end; ptr++){
-        *ptr = 255 - *ptr;
-    }
-    current = QPixmap::fromImage(image);
-    ui->label->setPixmap(current.scaled(ui->label_2->width(), ui->label_2->height(), Qt::KeepAspectRatio));
+    double vals[9] = {0, -1, 0, -1, 9, -1, 0, -1, 0};
+    PhotoEditor::convolution(3, 3, vals, 1, 1);
 }
 
 void PhotoEditor::gaussian_blur()
 {
-    QImage image = current.toImage().convertToFormat(QImage::Format_RGB888);
-    uchar* ptr = image.bits();
-    uchar* end = ptr + 3 * image.width() * image.height();
-    for (; ptr < end; ptr++){
-        *ptr = 255 - *ptr;
-    }
-    current = QPixmap::fromImage(image);
-    ui->label->setPixmap(current.scaled(ui->label_2->width(), ui->label_2->height(), Qt::KeepAspectRatio));
+    double vals[9] = {0, 1, 0, 1, 4, 1, 0, 1, 0};
+    PhotoEditor::convolution(3, 3, vals, 1, 1);
 }
 
 
@@ -203,3 +188,14 @@ PhotoEditor::~PhotoEditor()
     delete ui;
 }
 
+
+void PhotoEditor::on_actionReset_triggered()
+{
+    current = initial;
+    ui->label->setPixmap(current.scaled(ui->label->width(), ui->label->height(), Qt::KeepAspectRatio));
+}
+
+void PhotoEditor::on_actionCustom_Filter_triggered()
+{
+    myFilter->show();
+}

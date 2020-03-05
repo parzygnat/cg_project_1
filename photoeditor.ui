@@ -110,6 +110,7 @@
     </widget>
     <addaction name="menuFunctional_Filters"/>
     <addaction name="menuConvolution_Filters"/>
+    <addaction name="actionCustom_Filter"/>
     <addaction name="actionReset"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
@@ -142,6 +143,9 @@
   <action name="actionReset">
    <property name="text">
     <string>Reset</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
    </property>
   </action>
   <action name="actionDescription_Website">
@@ -227,6 +231,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+9</string>
+   </property>
+  </action>
+  <action name="actionCustom_Filter">
+   <property name="text">
+    <string>Custom Filter</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+0</string>
    </property>
   </action>
  </widget>

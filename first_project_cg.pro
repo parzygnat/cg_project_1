@@ -16,13 +16,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    customfilter.cpp \
     main.cpp \
     photoeditor.cpp
 
 HEADERS += \
+    customfilter.h \
     photoeditor.h
 
 FORMS += \
+    customfilter.ui \
     photoeditor.ui
 
 # Default rules for deployment.
