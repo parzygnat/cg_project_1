@@ -114,26 +114,27 @@ void PhotoEditor::contrast()
 }
 
 void PhotoEditor::convolution(int sizeX, int sizeY, double* values, int anchorX, int anchorY) {
-    QImage image = current.toImage().convertToFormat(QImage::Format_RGB888);
-    QImage image2 = current.toImage().convertToFormat(QImage::Format_RGB888);
+    QImage image = current.toImage();
+    QImage image2 = current.toImage();
     uchar* ptr = image.bits();
     uchar* ptr2 = image2.bits();
-    uchar* end = ptr + 3 * image.width() * image.height();
+    uchar* end = ptr + 4 * image.width() * image.height();
     int idx = 0;
     int x = 1;
     int y = 1;
     double sum = 0;
     double sum_of_coeffs = 0;
     for(; ptr < end; ptr++){
+        //if(idx != 0 && (idx+1)%4==0) continue;
         for(int j = 0; j < sizeX*sizeY; ++j) {
-            int n_ind = idx - (anchorY - j/sizeX)*image.width()*3 - (anchorX - j%sizeX)*3;
-            if(n_ind < 0 || n_ind > image.width()*image.height()*3)
+            int n_ind = idx - (anchorY - j/sizeX)*image.width()*4 - (anchorX - j%sizeX)*4;
+            if(n_ind < 0 || n_ind > image.width()*image.height()*4)
                 continue;
             sum += values[j] * ptr2[n_ind];
             sum_of_coeffs += values[j];
         }
         if(sum_of_coeffs == 0) sum_of_coeffs = 1;
-        *ptr = qBound(0.0, sum/sum_of_coeffs, 255.0);
+        *ptr = qBound(0.0, (double)sum/(double)sum_of_coeffs, 255.0);
 
         if(x == image.width()){
             x = 1;
