@@ -200,5 +200,14 @@ void PhotoEditor::on_actionReset_triggered()
 
 void PhotoEditor::on_actionCustom_Filter_triggered()
 {
-    myFilter->show();
+    myFilter->exec();
+    std::vector<double> values = myFilter->getVector();
+    double arr[values.size()];
+    std::copy(values.begin(), values.end(), arr);
+    int coo_x = myFilter->getX();
+    int coo_y = myFilter->getY();
+    int anch_x = myFilter->getAnchorX();
+    int anch_y = myFilter->getAnchorY();
+    convolution(coo_x, coo_y, arr, anch_x, anch_y);
+
 }

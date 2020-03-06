@@ -27,7 +27,7 @@ CustomFilter::~CustomFilter()
 
 
 
-void CustomFilter::on_horizontalSlider_6_sliderMoved(int position)
+void CustomFilter::on_horizontalSlider_5_sliderMoved(int position)
 {
     int prev_num_y = ui->label_6->text().toInt();
     int prev_num_x = ui->label_5->text().toInt();
@@ -37,7 +37,7 @@ void CustomFilter::on_horizontalSlider_6_sliderMoved(int position)
 
 }
 
-void CustomFilter::on_horizontalSlider_5_sliderMoved(int position)
+void CustomFilter::on_horizontalSlider_6_sliderMoved(int position)
 {
     int prev_num_x = ui->label_5->text().toInt();
     int prev_num_y = ui->label_6->text().toInt();
@@ -61,3 +61,15 @@ void CustomFilter::SliderMove(int positionX, int positionY, int prev_pos_x, int 
         }
 }
 }
+
+std::vector<double> CustomFilter::getVector() {
+    std::vector<double> values;
+    for(int i = 0; i < this->getX()*this->getY(); ++i) {
+        values.push_back(inputs[i]->text().toDouble());
+    }
+    return values;
+}
+int CustomFilter::getX() { return ui->label_5->text().toInt();}
+int CustomFilter::getY() {return ui->label_6->text().toInt();}
+int CustomFilter::getAnchorX(){return ui->spinBox->text().toInt();}
+int CustomFilter::getAnchorY(){return ui->spinBox_2->text().toInt();}

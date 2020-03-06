@@ -17,6 +17,11 @@ public:
     uchar* filter;
     int* sizeX;
     int* sizeY;
+    std::vector<double> getVector();
+    int getX();
+    int getY();
+    int getAnchorX();
+    int getAnchorY();
     ~CustomFilter();
 
 private slots:
