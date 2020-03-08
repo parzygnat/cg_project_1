@@ -112,29 +112,35 @@ void PhotoEditor::convolution(int sizeX, int sizeY, double* values, int anchorX,
     uchar* ptr2 = image2.bits();
     uchar* end = ptr + 4 * image.width() * image.height();
     int idx = 0;
-    int x = 1;
-    int y = 1;
+    int x = 0;
+    int y = 0;
     double sum = 0;
     double sum_of_coeffs = 0;
     for(; ptr < end; ptr++){
-        //if(idx != 0 && (idx+1)%4==0) continue;
-        for(int j = 0; j < sizeX*sizeY; ++j) {
-            int n_ind = idx - (anchorY - j/sizeX)*image.width()*4 - (anchorX - j%sizeX)*4;
-            if(n_ind < 0 || n_ind > image.width()*image.height()*4)
-                continue;
-            sum += values[j] * ptr2[n_ind];
-            sum_of_coeffs += values[j];
+        if(idx%4==3)
+        {
+            x++;
+            idx++;
+            if(x == image.width()){
+                x = 0;
+                ++y;
+            }
+            continue;
         }
-        if(sum_of_coeffs == 0) sum_of_coeffs = 1;
-        if(divisor != 0) sum_of_coeffs = divisor;
-        *ptr = qBound(0.0, (double)sum/(double)sum_of_coeffs, 255.0);
 
-        if(x == image.width()){
-            x = 1;
-            ++y;
+        if((x - anchorX >= 0 && y - anchorY >= 0) && (x + (sizeX - anchorX - 1) < image.width()) && (y + (sizeY - anchorY - 1) < image.height())) {
+            for(int j = 0; j < sizeX*sizeY; ++j) {
+                int n_ind = idx - (anchorY - j/sizeX)*image.width()*4 - (anchorX - j%sizeX)*4;
+                if(n_ind < 0 || n_ind > image.width()*image.height()*4)
+                    continue;
+                sum += values[j] * ptr2[n_ind];
+                sum_of_coeffs += values[j];
+            }
+            if(sum_of_coeffs == 0) sum_of_coeffs = 1;
+            if(divisor != 0) sum_of_coeffs = divisor;
+            *ptr = qBound(0.0, (double)sum/(double)sum_of_coeffs, 255.0);
         }
-        else
-            ++x;
+
         ++idx;
         sum = 0;
         sum_of_coeffs = 0;
