@@ -1,14 +1,13 @@
 #include "filter.h"
 #include <algorithm>
-Filter::Filter(int _sizeX, int _sizeY, int _anchorX, int _anchorY, double* _values, std::string name) :
+Filter::Filter(int _sizeX, int _sizeY, int _anchorX, int _anchorY, std::vector<double> _values, std::string name) :
     name(name), sizeX(_sizeX), sizeY(_sizeY), anchorX(_anchorX), anchorY(_anchorY)
 {
     values = new double[sizeX*sizeY];
-    std::copy(_values, _values + sizeX*sizeY, values);
+    std::copy(_values.begin(), _values.begin() + sizeX*sizeY, values);
 }
 
 Filter::~Filter() {
-    delete values;
 }
 
 int Filter::getX() { return sizeX;}

@@ -37,10 +37,27 @@ private slots:
 
     void on_radioButton_2_clicked();
 
+    void on_comboBox_currentIndexChanged(int index);
+
+    void on_horizontalSlider_5_valueChanged(int value);
+
+    void on_horizontalSlider_6_valueChanged(int value);
+
+    void on_pushButton_clicked();
+
+    void on_pushButton_3_clicked();
+
+    void on_pushButton_4_clicked();
+
+    void on_pushButton_2_clicked();
+
+    void on_pushButton_5_clicked();
+
 private:
     void SliderMove(int positionX, int positionY, int prev_pos_x, int prev_pos_y);
     std::vector<QDoubleSpinBox*> inputs;
     Ui::CustomFilter *ui;
+    int _index;
     std::vector<Filter> filters;
     bool custom;
 
