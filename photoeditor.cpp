@@ -113,7 +113,7 @@ void PhotoEditor::contrast()
     ui->label->setPixmap(current.scaled(ui->label_2->width(), ui->label_2->height(), Qt::KeepAspectRatio));
 }
 
-void PhotoEditor::convolution(int sizeX, int sizeY, double* values, int anchorX, int anchorY) {
+void PhotoEditor::convolution(int sizeX, int sizeY, double* values, int anchorX, int anchorY, double divisor) {
     QImage image = current.toImage();
     QImage image2 = current.toImage();
     uchar* ptr = image.bits();
@@ -134,6 +134,7 @@ void PhotoEditor::convolution(int sizeX, int sizeY, double* values, int anchorX,
             sum_of_coeffs += values[j];
         }
         if(sum_of_coeffs == 0) sum_of_coeffs = 1;
+        if(divisor != 0) sum_of_coeffs = divisor;
         *ptr = qBound(0.0, (double)sum/(double)sum_of_coeffs, 255.0);
 
         if(x == image.width()){
@@ -208,6 +209,7 @@ void PhotoEditor::on_actionCustom_Filter_triggered()
     int coo_y = myFilter->getY();
     int anch_x = myFilter->getAnchorX();
     int anch_y = myFilter->getAnchorY();
-    convolution(coo_x, coo_y, arr, anch_x, anch_y);
+    double divisor = myFilter->getCustom()?myFilter->getDivisor():0;
+    convolution(coo_x, coo_y, arr, anch_x, anch_y, divisor);
 
 }

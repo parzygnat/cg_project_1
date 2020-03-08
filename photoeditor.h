@@ -28,7 +28,7 @@ private slots:
     void brightness();
     void gamma();
     void contrast();
-    void convolution(int sizeX, int sizeY, double* values, int anchorX, int anchorY);
+    void convolution(int sizeX, int sizeY, double* values, int anchorX, int anchorY, double divisor = 0);
     void on_actionReset_triggered();
 
     void on_actionCustom_Filter_triggered();

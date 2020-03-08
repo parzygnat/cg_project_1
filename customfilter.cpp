@@ -6,7 +6,7 @@
 #include <QtGlobal>
 #include <QInputDialog>
 
-CustomFilter::CustomFilter(QWidget *parent, uchar* _filter, int* _sizeX, int* _sizeY)
+CustomFilter::CustomFilter(QWidget *parent, uchar* _filter, int* _sizeX, int* _sizeY, bool custom)
     : QDialog(parent)
     , ui(new Ui::CustomFilter), filter(_filter), sizeX(_sizeX), sizeY(_sizeY)
 {
@@ -14,9 +14,9 @@ CustomFilter::CustomFilter(QWidget *parent, uchar* _filter, int* _sizeX, int* _s
     for(int a = 0; a < 9; ++a) {
         for(int b = 0; b < 9; ++b)
         {
-            inputs.push_back(new QDoubleSpinBox(this)); ui->gridLayout->addWidget(inputs[9*a + b],a, b);
+            inputs.push_back(new QDoubleSpinBox(this)); inputs[9*a + b]->setRange(-1000, 1000);ui->gridLayout->addWidget(inputs[9*a + b],a, b);
         }
-}
+    }
 }
 
 
@@ -73,3 +73,17 @@ int CustomFilter::getX() { return ui->label_5->text().toInt();}
 int CustomFilter::getY() {return ui->label_6->text().toInt();}
 int CustomFilter::getAnchorX(){return ui->spinBox->text().toInt();}
 int CustomFilter::getAnchorY(){return ui->spinBox_2->text().toInt();}
+
+
+void CustomFilter::on_radioButton_clicked()
+{
+    custom = true;
+}
+
+void CustomFilter::on_radioButton_2_clicked()
+{
+    custom = false;
+}
+
+bool CustomFilter::getCustom() {return custom;}
+double CustomFilter::getDivisor() {return ui->divisor->text().toDouble();}

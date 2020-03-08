@@ -17,11 +17,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     customfilter.cpp \
+    filter.cpp \
     main.cpp \
     photoeditor.cpp
 
 HEADERS += \
     customfilter.h \
+    filter.h \
     photoeditor.h
 
 FORMS += \
