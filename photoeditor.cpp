@@ -57,30 +57,32 @@ void PhotoEditor::save() {
     }
 }
 
-void PhotoEditor::inverse()
-{
+void PhotoEditor::function_filter(int (*operation)(int)) {
     QImage image = current.toImage().convertToFormat(QImage::Format_RGB888);
     uchar* ptr = image.bits();
     uchar* end = ptr + 3 * image.width() * image.height();
     for (; ptr < end; ptr++){
-        *ptr = 255 - *ptr;
+        *ptr = operation(*ptr);
     }
     current = QPixmap::fromImage(image);
     ui->label->setPixmap(current.scaled(ui->label_2->width(), ui->label_2->height(), Qt::KeepAspectRatio));
+}
+
+void PhotoEditor::inverse()
+{
+    function_filter([](int a) { return 255 - a; });
 }
 
 void PhotoEditor::brightness()
 {
-    QImage image = current.toImage().convertToFormat(QImage::Format_RGB888);
-    uchar* ptr = image.bits();
-    uchar* end = ptr + 3 * image.width() * image.height();
-    for (; ptr < end; ptr++){
-        *ptr = (*ptr + 20)>255?255:(*ptr + 20);
-    }
-    current = QPixmap::fromImage(image);
-    ui->label->setPixmap(current.scaled(ui->label_2->width(), ui->label_2->height(), Qt::KeepAspectRatio));
-}
+    function_filter([](int a) { return (a + 20)>255?255:(a + 20); });
 
+}
+void PhotoEditor::contrast()
+{
+    function_filter([](int a) { return (int)qBound(0.0, (1.1*(a - 128) + 128), 255.0); });
+
+}
 void PhotoEditor::gamma()
 {
     bool ok;
@@ -96,18 +98,6 @@ void PhotoEditor::gamma()
     uchar* end = ptr + 3 * image.width() * image.height();
     for (; ptr < end; ptr++){
         *ptr = 255 * std::pow((*ptr)/255.0, 1.0/gamma_val);
-    }
-    current = QPixmap::fromImage(image);
-    ui->label->setPixmap(current.scaled(ui->label_2->width(), ui->label_2->height(), Qt::KeepAspectRatio));
-}
-
-void PhotoEditor::contrast()
-{
-    QImage image = current.toImage().convertToFormat(QImage::Format_RGB888);
-    uchar* ptr = image.bits();
-    uchar* end = ptr + 3 * image.width() * image.height();
-    for (; ptr < end; ptr++){
-        *ptr = qBound(0.0, (1.1*(*ptr - 128) + 128), 255.0);
     }
     current = QPixmap::fromImage(image);
     ui->label->setPixmap(current.scaled(ui->label_2->width(), ui->label_2->height(), Qt::KeepAspectRatio));
