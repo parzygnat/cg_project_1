@@ -172,3 +172,9 @@ void CustomFilter::on_pushButton_5_clicked()
         field->setValue(0);
     }
 }
+
+void CustomFilter::on_pushButton_6_clicked()
+{
+    int index = ui->comboBox->currentIndex();
+    filters[index] = Filter(this->getX(), this->getY(), this->getAnchorX(), this->getAnchorY(), this->getVector(), filters[index].name);
+}

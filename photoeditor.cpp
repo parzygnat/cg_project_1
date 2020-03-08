@@ -27,6 +27,7 @@ PhotoEditor::PhotoEditor(QWidget *parent)
     connect(ui->actionEdge_Detection, &QAction::triggered, this, &PhotoEditor::edge_detection);
     connect(ui->actionEmboss, &QAction::triggered, this, &PhotoEditor::emboss);
     connect(ui->actionSharpen, &QAction::triggered, this, &PhotoEditor::sharpen);
+    connect(ui->actionExit, &QAction::triggered, this, &PhotoEditor::exit);
 
 
 }
@@ -46,6 +47,7 @@ void PhotoEditor::open()
         ui->label_2->setPixmap(initial.scaled(ui->label_2->width(), ui->label_2->height(), Qt::KeepAspectRatio));
     }
 }
+void PhotoEditor::exit() { this->close();}
 
 void PhotoEditor::save() {
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save Image File"),

@@ -137,7 +137,7 @@
     <string>Exit</string>
    </property>
    <property name="shortcut">
-    <string/>
+    <string>Esc</string>
    </property>
   </action>
   <action name="actionReset">

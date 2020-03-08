@@ -27,11 +27,11 @@ private slots:
     void inverse();
     void brightness();
     void gamma();
+    void exit();
     void contrast();
     void convolution(int sizeX, int sizeY, double* values, int anchorX, int anchorY, double divisor = 0);
     void function_filter(int (*operation)(int));
     void on_actionReset_triggered();
-
     void on_actionCustom_Filter_triggered();
 
 private:

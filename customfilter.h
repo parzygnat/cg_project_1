@@ -53,6 +53,8 @@ private slots:
 
     void on_pushButton_5_clicked();
 
+    void on_pushButton_6_clicked();
+
 private:
     void SliderMove(int positionX, int positionY, int prev_pos_x, int prev_pos_y);
     std::vector<QDoubleSpinBox*> inputs;
