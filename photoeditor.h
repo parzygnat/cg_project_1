@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "customfilter.h"
+#include "dither_dialog.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class PhotoEditor; }
@@ -29,10 +30,13 @@ private slots:
     void gamma();
     void exit();
     void contrast();
-    void convolution(int sizeX, int sizeY, double* values, int anchorX, int anchorY, double divisor = 0);
+    void convolution(int sizeX, int sizeY, double* values, int anchorX, int anchorY, double offset = 0, double divisor = 0);
+    void convolution_saltpepper();
     void function_filter(int (*operation)(int));
     void on_actionReset_triggered();
     void on_actionCustom_Filter_triggered();
+
+    void on_actionOrdered_Dithering_triggered();
 
 private:
     Ui::PhotoEditor *ui;
@@ -40,5 +44,6 @@ private:
     QPixmap initial;
     QPixmap current;
     CustomFilter *myFilter;
+    DitherDialog *myDither;
 };
 #endif // PHOTOEDITOR_H

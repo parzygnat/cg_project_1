@@ -17,17 +17,20 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     customfilter.cpp \
+    dither_dialog.cpp \
     filter.cpp \
     main.cpp \
     photoeditor.cpp
 
 HEADERS += \
     customfilter.h \
+    dither_dialog.h \
     filter.h \
     photoeditor.h
 
 FORMS += \
     customfilter.ui \
+    dither_dialog.ui \
     photoeditor.ui
 
 # Default rules for deployment.

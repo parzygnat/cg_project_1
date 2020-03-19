@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1000</width>
-    <height>500</height>
+    <width>1600</width>
+    <height>900</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,8 +18,8 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>1000</width>
-    <height>500</height>
+    <width>1600</width>
+    <height>900</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -73,7 +73,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1000</width>
+     <width>1600</width>
      <height>24</height>
     </rect>
    </property>
@@ -108,9 +108,18 @@
      <addaction name="actionEdge_Detection"/>
      <addaction name="actionEmboss"/>
     </widget>
+    <widget class="QMenu" name="menuDither_Quantize">
+     <property name="title">
+      <string>Dither &amp; Quantize</string>
+     </property>
+     <addaction name="actionOrdered_Dithering"/>
+     <addaction name="actionUniform_Quantization"/>
+    </widget>
     <addaction name="menuFunctional_Filters"/>
     <addaction name="menuConvolution_Filters"/>
+    <addaction name="menuDither_Quantize"/>
     <addaction name="actionCustom_Filter"/>
+    <addaction name="actionLaboratory"/>
     <addaction name="actionReset"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
@@ -239,6 +248,30 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+0</string>
+   </property>
+  </action>
+  <action name="actionLaboratory">
+   <property name="text">
+    <string>Laboratory 1</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+L</string>
+   </property>
+  </action>
+  <action name="actionOrdered_Dithering">
+   <property name="text">
+    <string>Ordered Dithering</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+D</string>
+   </property>
+  </action>
+  <action name="actionUniform_Quantization">
+   <property name="text">
+    <string>Uniform Quantization</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
    </property>
   </action>
  </widget>

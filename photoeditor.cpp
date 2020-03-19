@@ -13,7 +13,7 @@ PhotoEditor::PhotoEditor(QWidget *parent)
     ui->setupUi(this);
 
     myFilter = new CustomFilter;
-
+    myDither = new DitherDialog;
     this->setCentralWidget(ui->horizontalFrame);
     connect(ui->actionLoad_Image, &QAction::triggered, this, &PhotoEditor::open);
     connect(ui->actionInversion, &QAction::triggered, this, &PhotoEditor::inverse);
@@ -28,6 +28,7 @@ PhotoEditor::PhotoEditor(QWidget *parent)
     connect(ui->actionEmboss, &QAction::triggered, this, &PhotoEditor::emboss);
     connect(ui->actionSharpen, &QAction::triggered, this, &PhotoEditor::sharpen);
     connect(ui->actionExit, &QAction::triggered, this, &PhotoEditor::exit);
+    connect(ui->actionLaboratory, &QAction::triggered, this, &PhotoEditor::convolution_saltpepper);
 
 
 }
@@ -43,6 +44,7 @@ void PhotoEditor::open()
     if(!fileName.isEmpty()) {
         QImage image(fileName);
         current = initial = QPixmap::fromImage(image);
+        ui->label->setFixedHeight(image.height()); ui->label->setFixedWidth(image.width());ui->label_2->setFixedWidth(image.width()); ui->label_2->setFixedHeight(image.height());
         ui->label->setPixmap(initial.scaled(ui->label->width(), ui->label->height(), Qt::KeepAspectRatio));
         ui->label_2->setPixmap(initial.scaled(ui->label_2->width(), ui->label_2->height(), Qt::KeepAspectRatio));
     }
@@ -105,7 +107,7 @@ void PhotoEditor::gamma()
     ui->label->setPixmap(current.scaled(ui->label_2->width(), ui->label_2->height(), Qt::KeepAspectRatio));
 }
 
-void PhotoEditor::convolution(int sizeX, int sizeY, double* values, int anchorX, int anchorY, double divisor) {
+void PhotoEditor::convolution(int sizeX, int sizeY, double* values, int anchorX, int anchorY, double offset, double divisor) {
     QImage image = current.toImage();
     QImage image2 = current.toImage();
     uchar* ptr = image.bits();
@@ -138,7 +140,7 @@ void PhotoEditor::convolution(int sizeX, int sizeY, double* values, int anchorX,
             }
             if(sum_of_coeffs == 0) sum_of_coeffs = 1;
             if(divisor != 0) sum_of_coeffs = divisor;
-            *ptr = qBound(0.0, (double)sum/(double)sum_of_coeffs, 255.0);
+            *ptr = qBound(0.0, offset + (double)sum/(double)sum_of_coeffs, 255.0);
         }
 
         ++idx;
@@ -149,10 +151,55 @@ void PhotoEditor::convolution(int sizeX, int sizeY, double* values, int anchorX,
     ui->label->setPixmap(current.scaled(ui->label_2->width(), ui->label_2->height(), Qt::KeepAspectRatio));
 }
 
+struct Triple
+{
+    int color[3];
+};
+
+void PhotoEditor::convolution_saltpepper() {
+    QImage image = current.toImage();
+    QImage image2 = current.toImage();
+    uchar* ptr = image.bits();
+    uchar* ptr2 = image2.bits();
+    uchar* end = ptr + 4 * image.width() * image.height();
+    std::vector<double> intensities;
+    std::map<double, Triple> colors;
+    int idx = 0;
+    int x = 0;
+    int y = 0;
+    for(; ptr < end; ptr += 4){
+        if((x - 1 >= 0 && y - 1 >= 0) && (x + (3 - 1 - 1) < image.width()) && (y + (3 - 1 - 1) < image.height())) {
+        for(int j = 0; j < 9; ++j) {
+            int n_ind = idx - (1 - j/3)*image.width()*4 - (1 - j%3)*4;
+            if(n_ind < 0 || n_ind > image.width()*image.height()*4) continue;
+            intensities.push_back(0.3*(ptr2[n_ind]) + 0.6*(ptr2[n_ind + 1]) + 0.1*(ptr2[n_ind + 2]));
+            Triple triple = {ptr2[n_ind], ptr2[n_ind + 1], ptr2[n_ind + 2]};
+            colors.insert(std::pair<double, Triple>(0.3*(ptr2[n_ind]) + 0.6*(ptr2[n_ind + 1]) + 0.1*(ptr2[n_ind + 2]), triple));
+        }
+        std::sort(intensities.begin(), intensities.end());
+        *ptr = colors[intensities[4]].color[0];
+        *(ptr + 2) = colors[intensities[4]].color[2];
+        *(ptr + 1) = colors[intensities[4]].color[1];
+        intensities.clear();
+        colors.clear();
+        }
+        idx += 4;
+        x++;
+        if(x == image.width()){
+            x = 0;
+            ++y;
+        }
+
+    }
+
+    current = QPixmap::fromImage(image);
+    ui->label->setPixmap(current.scaled(ui->label_2->width(), ui->label_2->height(), Qt::KeepAspectRatio));
+}
+
 void PhotoEditor::edge_detection()
 {
-    double vals[9] = {-1, -1, -1, -1, 8, -1, -1, -1, -1};
-    PhotoEditor::convolution(3, 3, vals, 1, 1);
+    double vals[9] = {1, 0, -1, 1, 0, -1, 1, 0, -1};
+    PhotoEditor::convolution(3, 3, vals, 1, 1, 90);
 }
 
 void PhotoEditor::emboss()
@@ -208,6 +255,13 @@ void PhotoEditor::on_actionCustom_Filter_triggered()
     int anch_x = myFilter->getAnchorX();
     int anch_y = myFilter->getAnchorY();
     double divisor = myFilter->getCustom()?myFilter->getDivisor():0;
-    convolution(coo_x, coo_y, arr, anch_x, anch_y, divisor);
+    convolution(coo_x, coo_y, arr, anch_x, anch_y, 0, divisor);
+
+}
+
+void PhotoEditor::on_actionOrdered_Dithering_triggered()
+{
+    myDither->exec();
+    int n = myDither->getN(), k = myDither->getK();
 
 }
