@@ -10,12 +10,12 @@ DitherDialog::DitherDialog(QWidget *parent)
 
 int DitherDialog::getN()
 {
-    return ui->spinBox->value();
+    return ui->radioButton_2->isChecked()?2:ui->radioButton_3->isChecked()?3:ui->radioButton_4->isChecked()?4:6;
 }
 
 int DitherDialog::getK()
 {
-    return ui->spinBox_2->value();
+    return ui->spinBox->value();
 }
 
 DitherDialog::~DitherDialog()

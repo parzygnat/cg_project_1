@@ -44,9 +44,9 @@ void PhotoEditor::open()
     if(!fileName.isEmpty()) {
         QImage image(fileName);
         current = initial = QPixmap::fromImage(image);
-        ui->label->setFixedHeight(image.height()); ui->label->setFixedWidth(image.width());ui->label_2->setFixedWidth(image.width()); ui->label_2->setFixedHeight(image.height());
-        ui->label->setPixmap(initial.scaled(ui->label->width(), ui->label->height(), Qt::KeepAspectRatio));
-        ui->label_2->setPixmap(initial.scaled(ui->label_2->width(), ui->label_2->height(), Qt::KeepAspectRatio));
+        ui->label->setFixedWidth(image.width());ui->label->setFixedHeight(image.height()); ui->label_2->setFixedHeight(image.height()); ui->label_2->setFixedWidth(image.width());
+        ui->label->setPixmap(initial);
+        ui->label_2->setPixmap(initial);
     }
 }
 void PhotoEditor::exit() { this->close();}
@@ -69,7 +69,7 @@ void PhotoEditor::function_filter(int (*operation)(int)) {
         *ptr = operation(*ptr);
     }
     current = QPixmap::fromImage(image);
-    ui->label->setPixmap(current.scaled(ui->label_2->width(), ui->label_2->height(), Qt::KeepAspectRatio));
+    ui->label->setPixmap(current);
 }
 
 void PhotoEditor::inverse()
@@ -104,7 +104,7 @@ void PhotoEditor::gamma()
         *ptr = 255 * std::pow((*ptr)/255.0, 1.0/gamma_val);
     }
     current = QPixmap::fromImage(image);
-    ui->label->setPixmap(current.scaled(ui->label_2->width(), ui->label_2->height(), Qt::KeepAspectRatio));
+    ui->label->setPixmap(current);
 }
 
 void PhotoEditor::convolution(int sizeX, int sizeY, double* values, int anchorX, int anchorY, double offset, double divisor) {
@@ -148,7 +148,7 @@ void PhotoEditor::convolution(int sizeX, int sizeY, double* values, int anchorX,
         sum_of_coeffs = 0;
     }
     current = QPixmap::fromImage(image);
-    ui->label->setPixmap(current.scaled(ui->label_2->width(), ui->label_2->height(), Qt::KeepAspectRatio));
+    ui->label->setPixmap(current);
 }
 
 struct Triple
@@ -193,7 +193,7 @@ void PhotoEditor::convolution_saltpepper() {
     }
 
     current = QPixmap::fromImage(image);
-    ui->label->setPixmap(current.scaled(ui->label_2->width(), ui->label_2->height(), Qt::KeepAspectRatio));
+    ui->label->setPixmap(current);
 }
 
 void PhotoEditor::edge_detection()
@@ -228,8 +228,8 @@ void PhotoEditor::gaussian_blur()
 
 
 void PhotoEditor::resizeEvent(QResizeEvent *event) {
-    ui->label->setPixmap(current.scaled(ui->label->width(), ui->label->height(), Qt::KeepAspectRatio));
-    ui->label_2->setPixmap(initial.scaled(ui->label_2->width(), ui->label_2->height(), Qt::KeepAspectRatio));
+    ui->label->setPixmap(current);
+    ui->label_2->setPixmap(initial);
 }
 
 PhotoEditor::~PhotoEditor()
@@ -264,4 +264,76 @@ void PhotoEditor::on_actionOrdered_Dithering_triggered()
     myDither->exec();
     int n = myDither->getN(), k = myDither->getK();
 
+    // algorithm
+
+    QImage image = current.toImage();
+    uchar* ptr = image.bits();
+    uchar* init_ptr = image.bits();
+    uchar* end = ptr + 4 * image.width() * image.height();
+    int idx = 0;
+    int x = 0;
+    int y = 0;
+    int mod = image.width()%n;
+    std::vector<double> matrix;
+    std::vector<double> levels;
+    double add = 1.0/(k - 1);
+    for(int i = 0; i < k; ++i) {
+        levels.push_back(i*add);
+    }
+
+    switch (n) {
+       case 2:
+        matrix = {0.2, 0.6, 0.8, 0.4};
+        break;
+       case 3:
+        matrix = {3/9.0, 7/9.0, 4/9.0, 6/9.0, 1/9.0, 9/9.0, 2/9.0, 8/9.0, 5/9.0};
+
+    }
+    for(; ptr < end; ptr++){
+        if(y + n > image.height()) break;
+        //making sure that we operate starting from the valid left upper corners
+        if(idx%4==3)
+        {
+            x += n;
+            idx += n * 4 - 3;
+            ptr += n * 4 - 4;
+            if(x >= image.width() - mod){
+                x = 0;
+                y += n;
+                init_ptr += n*image.width()*4;
+                ptr = init_ptr - 1;
+                idx = 0;
+            }
+            continue;
+        }
+
+        //code for NxN dithering
+        printf("%d \n", idx);
+        for(int i = 0; i < n; ++i) {
+            for(int j = 0; j < n; ++j)
+            {
+                double init_color = (*(ptr + j*4 + i*image.width()*4))/255.0;
+                int color = (int)(k - 1)*init_color;
+                double re = (k - 1)*init_color - color;
+                if ( re >= matrix[i*n + j] ) ++color;
+                *(ptr + j*4 + i*image.width()*4) = levels[color]*255.0;
+            }
+        }
+        ++idx;
+    }
+    current = QPixmap::fromImage(image);
+    ui->label->setPixmap(current);
+
+}
+
+void PhotoEditor::on_actionB_W_triggered()
+{
+    QImage image = current.toImage();
+    uchar* ptr = image.bits();
+    uchar* end = ptr + 4 * image.width() * image.height();
+    for(; ptr < end; ptr += 4){
+        *ptr = *(ptr + 1) = *(ptr + 2) = 0.3*(*ptr) + 0.59*(*(ptr + 1)) + 0.11*(*(ptr + 2));
+    }
+    current = QPixmap::fromImage(image);
+    ui->label->setPixmap(current);
 }

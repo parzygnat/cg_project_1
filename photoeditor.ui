@@ -121,6 +121,7 @@
     <addaction name="actionCustom_Filter"/>
     <addaction name="actionLaboratory"/>
     <addaction name="actionReset"/>
+    <addaction name="actionB_W"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
     <property name="title">
@@ -272,6 +273,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionB_W">
+   <property name="text">
+    <string>B&amp;W</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+G</string>
    </property>
   </action>
  </widget>

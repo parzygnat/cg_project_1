@@ -38,6 +38,8 @@ private slots:
 
     void on_actionOrdered_Dithering_triggered();
 
+    void on_actionB_W_triggered();
+
 private:
     Ui::PhotoEditor *ui;
     QString currentFile;
