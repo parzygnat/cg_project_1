@@ -343,3 +343,33 @@ void PhotoEditor::on_actionB_W_triggered()
     current = QPixmap::fromImage(image);
     ui->label->setPixmap(current);
 }
+
+void PhotoEditor::on_actionUniform_Quantization_triggered()
+{
+    bool ok;
+    int idx = 0;
+    QImage image = current.toImage();
+    uchar* ptr = image.bits();
+    uchar* end = ptr + 4 * image.width() * image.height();
+    double k_val;
+    QString text = QInputDialog::getText(this, tr("Number of intervals"),
+                                         tr("Number of Intervals:"), QLineEdit::Normal,
+                                         "3", &ok);
+    if (ok && !text.isEmpty())
+        k_val = text.toDouble();
+    else k_val = 3;
+    double edge = 256.0/k_val;
+    for(; ptr < end; ptr++){
+        if(idx%4==3){
+            ++idx;
+            continue;
+        }
+        *ptr = ((int)((*ptr)/edge) + 0.5)*edge;
+        ++idx;
+    }
+    current = QPixmap::fromImage(image);
+    ui->label->setPixmap(current);
+}
+
+
+

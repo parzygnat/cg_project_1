@@ -40,6 +40,8 @@ private slots:
 
     void on_actionB_W_triggered();
 
+    void on_actionUniform_Quantization_triggered();
+
 private:
     Ui::PhotoEditor *ui;
     QString currentFile;
