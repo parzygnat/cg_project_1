@@ -283,12 +283,18 @@ void PhotoEditor::on_actionOrdered_Dithering_triggered()
 
     switch (n) {
        case 2:
-        matrix = {0.2, 0.6, 0.8, 0.4};
+        matrix = {1, 3, 4, 2};
         break;
        case 3:
-        matrix = {3/9.0, 7/9.0, 4/9.0, 6/9.0, 1/9.0, 9/9.0, 2/9.0, 8/9.0, 5/9.0};
-
+        matrix = {3, 7, 4, 6, 1, 9, 2, 8, 5};
+        break;
+       case 4:
+        matrix = {1, 9, 3, 11, 13, 5, 15, 7, 4, 12, 2, 10, 16, 8, 14, 6};
+        break;
+       case 6:
+        matrix = {9, 25, 13, 11, 27, 15, 21, 1, 33, 23, 3, 35, 5, 29, 17, 7, 31, 19, 12, 28, 16, 10, 26, 14, 24, 4, 36, 22, 2, 34, 8, 32, 20, 6, 30, 18};
     }
+    for(size_t i = 0; i < matrix.size(); ++i) matrix[i] = matrix[i]/(matrix.size()+1);
     for(; ptr < end; ptr++){
         if(y + n > image.height()) break;
         //making sure that we operate starting from the valid left upper corners
